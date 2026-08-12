@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CHUCHAY PHOTOBOOTH 💜</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --lavender: #e9d5ff;
+      --orchid: #c084fc;
+      --violet: #a855f7;
+      --cream: #fffaf0;
+      --ink: #4c1d68;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: "Quicksand", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 18% 13%, rgba(255, 255, 255, 0.92) 0 7%, transparent 8%),
+        radial-gradient(circle at 83% 14%, rgba(255, 214, 232, 0.8) 0 7%, transparent 8%),
+        radial-gradient(circle at 15% 86%, rgba(196, 181, 253, 0.86) 0 8%, transparent 9%),
+        linear-gradient(135deg, #fff5fb 0%, #e9d5ff 34%, #d8b4fe 67%, #c084fc 100%);
+      background-attachment: fixed;
+    }
+
+    button { font-family: "Fredoka", system-ui, sans-serif; touch-action: manipulation; }
+    .font-bubble { font-family: "Fredoka", system-ui, sans-serif; }
+
+    .glass {
+      background: rgba(255, 250, 252, 0.84);
+      border: 2px solid rgba(255, 255, 255, 0.78);
+      box-shadow: 0 28px 70px rgba(122, 55, 180, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(18px);
+    }
+
+    .polished-panel {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .polished-panel::before {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 5px;
+      content: "";
+      background: linear-gradient(90deg, #f0abfc, #c084fc, #fff, #a855f7);
+      opacity: 0.9;
+    }
+
+    .sparkle-field::before,
+    .sparkle-field::after {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      content: "";
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.95) 0 2px, transparent 3px),
+        radial-gradient(circle, rgba(255,214,232,0.8) 0 3px, transparent 4px);
+      background-position: 18px 22px, 90px 120px;
+      background-size: 140px 130px, 190px 180px;
+      animation: drift 18s linear infinite;
+    }
+
+    .sparkle-field::after { opacity: 0.58; animation-duration: 26s; transform: rotate(8deg); }
+
+    @keyframes drift {
+      from { background-position: 18px 22px, 90px 120px; }
+      to { background-position: 158px 152px, 280px 300px; }
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .cute-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0.78rem 1.18rem;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, #c084fc, #a855f7);
+      box-shadow: 0 12px 24px rgba(168, 85, 247, 0.32), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .cute-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 16px 30px rgba(168, 85, 247, 0.38), inset 0 2px 0 rgba(255, 255, 255, 0.42);
+    }
+
+    .cute-btn:disabled { cursor: not-allowed; opacity: 0.55; filter: grayscale(0.15); }
+
+    .cream-btn {
+      color: #7e22ce;
+      background: linear-gradient(135deg, #fffaf0, #ffe4f0);
+      box-shadow: 0 12px 22px rgba(132, 69, 160, 0.17), inset 0 2px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .icon-btn {
+      width: 48px;
+      min-width: 48px;
+      height: 48px;
+      padding: 0;
+      border-radius: 999px;
+    }
+
+    .pill-scroll {
+      display: flex;
+      gap: 0.65rem;
+      overflow-x: auto;
+      padding: 0.25rem 0.15rem 0.75rem;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .choice-chip {
+      min-width: max-content;
+      min-height: 44px;
+      padding: 0.65rem 0.95rem;
+      border: 2px solid rgba(255,255,255,0.86);
+      border-radius: 999px;
+      color: #6b21a8;
+      background: rgba(255,255,255,0.7);
+      box-shadow: 0 8px 18px rgba(91, 43, 130, 0.12);
+      font-weight: 700;
+    }
+
+    .choice-chip[aria-pressed="true"] {
+      color: white;
+      background: linear-gradient(135deg, #c084fc, #a855f7);
+      box-shadow: 0 10px 22px rgba(168, 85, 247, 0.28);
+    }
+
+    .mobile-jump {
+      display: none;
+      gap: 0.55rem;
+      overflow-x: auto;
+      padding: 0.35rem 0 0.1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .frame-card {
+      width: 148px;
+      min-width: 148px;
+      border: 3px solid rgba(255, 255, 255, 0.86);
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .frame-card[aria-pressed="true"] {
+      border-color: #a855f7;
+      box-shadow: 0 0 0 5px rgba(233, 213, 255, 0.92), 0 16px 30px rgba(168, 85, 247, 0.25);
+      transform: translateY(-3px);
+    }
+
+    .video-wrap {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border: 10px solid rgba(255, 255, 255, 0.72);
+      border-radius: 32px;
+      background: #2b1640;
+      box-shadow: 0 24px 55px rgba(82, 40, 124, 0.24);
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      filter: var(--active-filter, none);
+    }
+
+    .preview-sticker-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .preview-sticker {
+      position: absolute;
+      font-size: clamp(1.8rem, 6vw, 3.5rem);
+      filter: drop-shadow(0 5px 8px rgba(68, 24, 98, 0.25));
+    }
+
+    .countdown {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font: 700 clamp(4rem, 16vw, 9rem) "Fredoka", system-ui, sans-serif;
+      text-shadow: 0 7px 0 rgba(168, 85, 247, 0.45), 0 14px 32px rgba(0, 0, 0, 0.35);
+      background: rgba(168, 85, 247, 0.16);
+      backdrop-filter: blur(2px);
+    }
+
+    .countdown.show { display: flex; animation: pop 0.7s ease both; }
+
+    @keyframes pop {
+      0% { opacity: 0; transform: scale(0.72); }
+      40% { opacity: 1; transform: scale(1.08); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .mini-strip {
+      display: grid;
+      gap: 10px;
+      width: min(180px, 42vw);
+      padding: 12px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #f3e8ff, #fff7fb);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.88), 0 16px 35px rgba(95, 50, 125, 0.16);
+    }
+
+    .mini-photo {
+      aspect-ratio: 4 / 3;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 18px;
+      color: rgba(126, 34, 206, 0.55);
+      background: rgba(255, 255, 255, 0.72);
+      border: 2px dashed rgba(192, 132, 252, 0.52);
+      font: 700 1.45rem "Fredoka", system-ui, sans-serif;
+    }
+
+    .mini-photo img, .strip-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    .strip-stage {
+      display: grid;
+      place-items: center;
+      min-height: 620px;
+      padding: 16px;
+    }
+
+    .photo-strip {
+      position: relative;
+      width: min(390px, 88vw);
+      padding: 54px 34px 68px;
+      overflow: hidden;
+      border-radius: 36px;
+      box-shadow: 0 30px 70px rgba(87, 36, 130, 0.25);
+    }
+
+    .photo-strip.theme-chuchay {
+      padding-top: 112px;
+      padding-bottom: 136px;
+    }
+
+    .photo-strip::before, .photo-strip::after {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      content: "";
+    }
+
+    .strip-photos {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 16px;
+    }
+
+    .strip-photo {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border: 8px solid rgba(255, 255, 255, 0.86);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.55);
+      box-shadow: 0 10px 24px rgba(62, 28, 91, 0.18);
+    }
+
+    .decor {
+      position: absolute;
+      z-index: 4;
+      font-size: 34px;
+      filter: drop-shadow(0 5px 6px rgba(75, 34, 112, 0.18));
+      user-select: none;
+    }
+
+    .label-tag {
+      position: absolute;
+      z-index: 5;
+      right: 24px;
+      bottom: 18px;
+      padding: 8px 15px;
+      border-radius: 999px;
+      color: #7e22ce;
+      background: rgba(255, 255, 255, 0.78);
+      font: 700 0.9rem "Fredoka", system-ui, sans-serif;
+      box-shadow: 0 8px 18px rgba(90, 42, 130, 0.13);
+    }
+
+    .mobile-actions {
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+      margin: 1rem -1rem -1.25rem;
+      padding: 0.75rem max(1rem, env(safe-area-inset-left)) max(0.9rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-right));
+      background: rgba(255, 250, 252, 0.9);
+      border-top: 2px solid rgba(255,255,255,0.78);
+      box-shadow: 0 -14px 32px rgba(87, 36, 130, 0.14);
+      backdrop-filter: blur(16px);
+    }
+
+    .music-player {
+      position: fixed;
+      right: 12px;
+      top: 72px;
+      z-index: 30;
+      width: 192px;
+      height: 108px;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 3px solid rgba(255,255,255,0.78);
+      box-shadow: 0 14px 30px rgba(76, 29, 104, 0.24);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .music-player.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .theme-bears { background: linear-gradient(180deg, #d8b4fe, #f5d0fe 45%, #fce7f3); }
+    .theme-chuchay {
+      background:
+        radial-gradient(circle at 7% 18%, rgba(168, 85, 247, 0.16) 0 18px, transparent 19px),
+        radial-gradient(circle at 92% 32%, rgba(216, 180, 254, 0.34) 0 30px, transparent 31px),
+        radial-gradient(circle at 13% 86%, rgba(255, 255, 255, 0.78) 0 36px, transparent 37px),
+        linear-gradient(180deg, #fdf4ff 0%, #f3e8ff 42%, #fae8ff 100%);
+    }
+    .theme-chuchay::before {
+      background-image:
+        radial-gradient(circle, rgba(168,85,247,0.35) 0 3px, transparent 4px),
+        linear-gradient(90deg, transparent 0 46%, rgba(192,132,252,0.35) 47% 53%, transparent 54%),
+        linear-gradient(transparent 0 46%, rgba(192,132,252,0.35) 47% 53%, transparent 54%);
+      background-size: 74px 74px, 92px 92px, 92px 92px;
+    }
+    .theme-y2k { background: linear-gradient(180deg, #a855f7, #c084fc 46%, #f0abfc); }
+    .theme-bunny { background: linear-gradient(180deg, #f5d0fe, #ddd6fe 50%, #bfdbfe); }
+    .theme-gingham {
+      background-color: #e9d5ff;
+      background-image:
+        linear-gradient(90deg, rgba(168,85,247,0.18) 50%, transparent 50%),
+        linear-gradient(rgba(168,85,247,0.18) 50%, transparent 50%);
+      background-size: 34px 34px;
+    }
+    .theme-milk { background: linear-gradient(180deg, #faf5ff, #e9d5ff 70%, #fff1f2); }
+    .theme-soda { background: radial-gradient(circle at 26% 18%, #f0abfc 0 10%, transparent 11%), linear-gradient(180deg, #8b5cf6, #c084fc 55%, #f0abfc); }
+    .theme-candy { background: repeating-linear-gradient(135deg, #f5d0fe 0 22px, #e9d5ff 22px 44px, #fff1f2 44px 66px); }
+    .theme-dream { background: linear-gradient(180deg, #c4b5fd, #fbcfe8 48%, #fef3c7); }
+    .theme-stars { background: radial-gradient(circle at 22% 20%, #fff 0 8%, transparent 9%), linear-gradient(160deg, #7c3aed, #c084fc, #f5d0fe); }
+    .theme-kuromi { background: linear-gradient(180deg, #581c87, #a855f7 52%, #f5d0fe); }
+    .theme-pearl { background: radial-gradient(circle at 30% 18%, rgba(255,255,255,.85), transparent 22%), linear-gradient(180deg, #fdf4ff, #ddd6fe, #fbcfe8); }
+    .theme-ribbon { background: repeating-linear-gradient(90deg, #f3e8ff 0 26px, #fce7f3 26px 52px, #d8b4fe 52px 78px); }
+    .theme-jelly { background: radial-gradient(circle, rgba(255,255,255,.42) 0 8px, transparent 9px), linear-gradient(180deg, #c084fc, #e879f9, #f0abfc); background-size: 44px 44px, auto; }
+    .theme-galaxy { background: radial-gradient(circle at 25% 20%, #fef3c7 0 5%, transparent 6%), radial-gradient(circle at 70% 30%, #fff 0 3%, transparent 4%), linear-gradient(180deg, #312e81, #7e22ce, #d8b4fe); }
+    .theme-strawberry { background: linear-gradient(180deg, #fce7f3, #e9d5ff 55%, #fef3c7); }
+    .theme-crown { background: linear-gradient(180deg, #f5d0fe, #c4b5fd, #fde68a); }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(58, 18, 87, 0.32);
+      backdrop-filter: blur(10px);
+    }
+    .modal.open { display: flex; }
+
+    @media (max-width: 800px) {
+      main { padding: 0.75rem 0.75rem 1.25rem; }
+      .glass, header, section.rounded-\[2rem\] { border-radius: 1.5rem !important; }
+      header {
+        position: sticky;
+        top: 0.55rem;
+        z-index: 18;
+      }
+      .mobile-jump { display: flex; }
+      .video-wrap { border-width: 6px; border-radius: 24px; }
+      .photo-strip { width: min(330px, 92vw); padding: 42px 22px 56px; border-radius: 30px; }
+      .photo-strip.theme-chuchay { padding-top: 94px; padding-bottom: 120px; }
+      .strip-stage { min-height: auto; padding: 8px; }
+      .strip-photos { gap: 11px; }
+      .strip-photo { border-width: 6px; border-radius: 15px; }
+      .frame-card { width: 132px; min-width: 132px; }
+      .mini-strip { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .music-player { width: 148px; height: 84px; top: 68px; }
+    }
+  </style>
+</head>
+<body class="sparkle-field">
+  <main class="min-h-screen px-4 py-5 sm:px-6 lg:px-8">
+    <button id="audioToggle" class="cute-btn icon-btn fixed right-4 top-4 z-30" title="Music" aria-label="Toggle music">🔇</button>
+    <audio id="bgMusic" src="assets/polaroid-love-instrumental.mp3" loop preload="auto"></audio>
+
+    <section id="welcomeScreen" class="screen active">
+      <div class="mx-auto flex min-h-[92vh] max-w-4xl items-center justify-center">
+        <div class="glass polished-panel w-full rounded-[2rem] p-6 text-center sm:p-10">
+          <div class="mx-auto mb-5 grid h-24 w-24 place-items-center rounded-full bg-white/80 text-5xl shadow-xl">💜</div>
+          <p class="font-bubble text-sm font-bold uppercase tracking-[0.22em] text-purple-500">Lavender Pop Studio</p>
+          <h1 class="font-bubble mt-3 text-4xl font-bold leading-tight text-purple-800 sm:text-6xl">CHUCHAY PHOTOBOOTH 💜</h1>
+          <p class="mx-auto mt-4 max-w-2xl text-lg font-bold text-purple-700/80">Choose frames, filters, and stickers, then pose through four timed snaps for a cute downloadable strip.</p>
+          <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <button id="enterBtn" class="cute-btn text-lg">Enter Photobooth 📸</button>
+            <button id="previewFramesBtn" class="cute-btn cream-btn text-lg">Browse Frames ✨</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="boothScreen" class="screen">
+      <div class="mx-auto max-w-7xl">
+        <header class="mb-5 flex flex-col gap-4 rounded-[2rem] bg-white/70 p-4 shadow-xl backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-bubble text-sm font-bold uppercase tracking-[0.18em] text-purple-500">Pose cute, print cute</p>
+            <h2 class="font-bubble text-3xl font-bold text-purple-800 sm:text-4xl">CHUCHAY PHOTOBOOTH 💜</h2>
+            <div class="mobile-jump" aria-label="Mobile section shortcuts">
+              <button id="cameraJumpBtn" class="choice-chip">Camera</button>
+              <button id="customizeJumpBtn" class="choice-chip">Filters</button>
+              <button id="stripJumpBtn" class="choice-chip">Strip</button>
+              <button id="framesJumpHeaderBtn" class="choice-chip">Frames</button>
+            </div>
+          </div>
+          <div class="hidden flex-wrap gap-2 sm:flex">
+            <button id="retakeTopBtn" class="cute-btn cream-btn">Restart</button>
+            <button id="downloadTopBtn" class="cute-btn hidden">Download PNG</button>
+          </div>
+        </header>
+
+        <div class="grid gap-5 lg:grid-cols-[1fr_430px]">
+          <section id="cameraPanel" class="glass polished-panel rounded-[2rem] p-4 sm:p-6">
+            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h3 class="font-bubble text-2xl font-bold text-purple-800">Camera Preview</h3>
+                <p id="statusText" class="font-bold text-purple-700/75">Allow camera access to begin.</p>
+              </div>
+              <button id="takePhotoBtn" class="cute-btn hidden text-base sm:inline-flex" disabled>Take Photo</button>
+            </div>
+
+            <div class="grid gap-5 xl:grid-cols-[1fr_210px]">
+              <div class="video-wrap">
+                <video id="video" autoplay playsinline muted></video>
+                <div id="previewStickerLayer" class="preview-sticker-layer"></div>
+                <div id="countdown" class="countdown" aria-live="polite"></div>
+              </div>
+              <aside class="flex justify-center xl:justify-start">
+                <div id="liveStrip" class="mini-strip" aria-label="Captured photos"></div>
+              </aside>
+            </div>
+
+            <div class="mt-5 grid gap-4">
+              <div>
+                <div class="mb-2 flex items-center justify-between">
+                  <h3 class="font-bubble text-xl font-bold text-purple-800">Filters</h3>
+                  <span id="filterName" class="rounded-full bg-white/70 px-3 py-1 font-bubble text-sm font-bold text-purple-700 shadow">Soft</span>
+                </div>
+                <div id="filterGallery" class="pill-scroll" aria-label="Filter choices"></div>
+              </div>
+
+              <div>
+                <div class="mb-2 flex items-center justify-between">
+                  <h3 class="font-bubble text-xl font-bold text-purple-800">Stickers</h3>
+                  <span id="stickerName" class="rounded-full bg-white/70 px-3 py-1 font-bubble text-sm font-bold text-purple-700 shadow">Purple Hearts</span>
+                </div>
+                <div id="stickerGallery" class="pill-scroll" aria-label="Sticker choices"></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="stripPanel" class="glass polished-panel rounded-[2rem] p-4 sm:p-6">
+            <h3 class="font-bubble text-2xl font-bold text-purple-800">Final Strip</h3>
+            <p class="mb-3 font-bold text-purple-700/75">Switch frames any time. Every strip holds exactly four photos.</p>
+            <div id="stripStage" class="strip-stage"></div>
+            <div class="mt-3 hidden flex-wrap justify-center gap-2 sm:flex">
+              <button id="downloadBtn" class="cute-btn" disabled>Download Photo Strip</button>
+              <button id="retakeBtn" class="cute-btn cream-btn">Retake</button>
+            </div>
+          </section>
+        </div>
+
+        <section id="framesPanel" class="mt-5 rounded-[2rem] bg-white/70 p-4 shadow-xl backdrop-blur sm:p-5">
+          <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h3 class="font-bubble text-2xl font-bold text-purple-800">Choose a Frame</h3>
+            <span id="frameName" class="w-fit rounded-full bg-white/70 px-4 py-2 font-bubble text-sm font-bold text-purple-700 shadow">Pastel Lavender Bears & Hearts</span>
+          </div>
+          <div id="frameGallery" class="flex gap-4 overflow-x-auto pb-3" aria-label="Frame selection gallery"></div>
+        </section>
+
+        <nav class="mobile-actions sm:hidden" aria-label="Mobile photobooth actions">
+          <div class="grid grid-cols-2 gap-2">
+            <button id="takePhotoMobileBtn" class="cute-btn w-full" disabled>Take Photo</button>
+            <button id="downloadMobileBtn" class="cute-btn w-full" disabled>Download</button>
+            <button id="framesJumpBtn" class="cute-btn cream-btn w-full">Frames</button>
+            <button id="retakeMobileBtn" class="cute-btn cream-btn w-full">Retake</button>
+          </div>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <div id="permissionModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="permissionTitle">
+    <div class="glass max-w-md rounded-[2rem] p-6 text-center">
+      <div class="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-white/80 text-4xl shadow-lg">💜</div>
+      <h2 id="permissionTitle" class="font-bubble text-3xl font-bold text-purple-800">Camera needs permission</h2>
+      <p class="mt-3 font-bold text-purple-700/80">Please allow webcam access in your browser settings, then try entering the photobooth again.</p>
+      <button id="tryAgainBtn" class="cute-btn mt-6">Try Again</button>
+    </div>
+  </div>
+
+  <canvas id="captureCanvas" class="hidden"></canvas>
+  <canvas id="downloadCanvas" class="hidden"></canvas>
+
+  <script>
+    const frames = [
+      ["chuchay", "Purple So Cute Best Day", "theme-chuchay", "best day", ["🧸","🐾","🎀","🐶"]],
+      ["bears", "Pastel Lavender Bears & Hearts", "theme-bears", "bear hug", ["🧸","💜","💕","♡"]],
+      ["y2k", "Retro Purple Y2K Sparkles", "theme-y2k", "y2k glam", ["✦","💿","✧","✦"]],
+      ["bunny", "Purple Cloud & Bunny Fantasy", "theme-bunny", "cloud hop", ["☁️","🐰","☁️","💫"]],
+      ["gingham", "Bubbly Purple Gingham Pattern", "theme-gingham", "picnic bow", ["🎀","♡","🎀","✿"]],
+      ["milk", "Minimalist Lilac Milk", "theme-milk", "lilac milk", ["🥛","🍓","✿","♡"]],
+      ["soda", "Grape Soda Pop", "theme-soda", "grape fizz", ["🥤","○","🫧","✦"]],
+      ["candy", "Lilac Candy Ribbon", "theme-candy", "sweet pop", ["🍬","🎀","♡","✧"]],
+      ["dream", "Moonlit Purple Dream", "theme-dream", "soft moon", ["🌙","⭐","☁️","💜"]],
+      ["stars", "Chrome Star Angel", "theme-stars", "star angel", ["✨","🪽","✦","💎"]],
+      ["kuromi", "Dark Lilac Kawaii Pop", "theme-kuromi", "kawaii pop", ["💜","🖤","⚡","✦"]],
+      ["pearl", "Pearl Princess Purple", "theme-pearl", "pearl glow", ["🫧","👑","♡","✨"]],
+      ["ribbon", "Ribbon Cake Lavender", "theme-ribbon", "cake bow", ["🎂","🎀","🍓","♡"]],
+      ["jelly", "Jelly Bubble Purple", "theme-jelly", "jelly pop", ["🫧","💜","○","🫧"]],
+      ["galaxy", "Tiny Purple Galaxy", "theme-galaxy", "moon pop", ["🌙","⭐","✨","💜"]],
+      ["strawberry", "Strawberry Lilac Picnic", "theme-strawberry", "berry cute", ["🍓","🎀","✿","🍰"]],
+      ["crown", "Princess Crown Lilac", "theme-crown", "royal cute", ["👑","💜","✨","♡"]]
+    ].map(([id, name, className, label, icons]) => ({ id, name, className, label, icons }));
+
+    const filters = [
+      ["soft", "Soft", "brightness(1.06) saturate(1.12) contrast(0.96)"],
+      ["dreamy", "Dreamy", "brightness(1.12) saturate(1.25) blur(0.3px)"],
+      ["kawaii", "Kawaii Pink", "brightness(1.08) sepia(0.08) saturate(1.45) hue-rotate(292deg)"],
+      ["lavender", "Lavender Glow", "brightness(1.08) saturate(1.35) hue-rotate(22deg)"],
+      ["y2k", "Y2K Pop", "contrast(1.12) saturate(1.7) brightness(1.04)"],
+      ["milk", "Milk Soft", "brightness(1.18) contrast(0.86) saturate(0.92)"],
+      ["retro", "Retro Film", "sepia(0.22) contrast(1.04) saturate(1.18)"],
+      ["grape", "Grape Soda", "hue-rotate(255deg) saturate(1.35) brightness(1.04)"],
+      ["blush", "Blush", "sepia(0.12) saturate(1.55) brightness(1.08) hue-rotate(315deg)"],
+      ["chrome", "Chrome Cute", "contrast(1.18) saturate(1.25) brightness(1.1)"],
+      ["mono", "Purple Mono", "grayscale(0.65) sepia(0.2) hue-rotate(235deg) saturate(1.7)"],
+      ["clear", "Clear", "none"]
+    ].map(([id, name, css]) => ({ id, name, css }));
+
+    const stickerPacks = [
+      ["hearts", "Purple Hearts", ["💜","💟","💕","♡"]],
+      ["bears", "Bears", ["🧸","💜","🍯","♡"]],
+      ["bunnies", "Bunnies", ["🐰","☁️","🥕","💫"]],
+      ["sparkles", "Sparkles", ["✨","✦","💎","✧"]],
+      ["bows", "Bows", ["🎀","♡","🎀","✿"]],
+      ["strawberry", "Strawberry", ["🍓","🍰","🎀","♡"]],
+      ["soda", "Soda Pop", ["🥤","🫧","○","💜"]],
+      ["princess", "Princess", ["👑","✨","💜","🪽"]],
+      ["moon", "Moon", ["🌙","⭐","☁️","✨"]],
+      ["candy", "Candy", ["🍬","🍭","💜","✨"]],
+      ["flower", "Flowers", ["✿","🌸","💜","♡"]],
+      ["none", "No Stickers", []]
+    ].map(([id, name, icons]) => ({ id, name, icons }));
+
+    const stickerPositions = [
+      { left: "5%", top: "6%" },
+      { right: "6%", top: "7%" },
+      { left: "6%", bottom: "7%" },
+      { right: "7%", bottom: "8%" }
+    ];
+
+    const state = {
+      stream: null,
+      selectedFrame: frames[0],
+      selectedFilter: filters[0],
+      selectedStickerPack: stickerPacks[0],
+      photos: [],
+      capturing: false,
+      entered: false,
+      muted: false,
+      musicWanted: true,
+      firstGestureSeen: false,
+      shutterCtx: null
+    };
+
+    const els = {
+      welcomeScreen: document.getElementById("welcomeScreen"),
+      boothScreen: document.getElementById("boothScreen"),
+      enterBtn: document.getElementById("enterBtn"),
+      previewFramesBtn: document.getElementById("previewFramesBtn"),
+      audioToggle: document.getElementById("audioToggle"),
+      bgMusic: document.getElementById("bgMusic"),
+      video: document.getElementById("video"),
+      previewStickerLayer: document.getElementById("previewStickerLayer"),
+      countdown: document.getElementById("countdown"),
+      statusText: document.getElementById("statusText"),
+      takePhotoBtn: document.getElementById("takePhotoBtn"),
+      takePhotoMobileBtn: document.getElementById("takePhotoMobileBtn"),
+      liveStrip: document.getElementById("liveStrip"),
+      stripStage: document.getElementById("stripStage"),
+      frameGallery: document.getElementById("frameGallery"),
+      frameName: document.getElementById("frameName"),
+      filterGallery: document.getElementById("filterGallery"),
+      filterName: document.getElementById("filterName"),
+      stickerGallery: document.getElementById("stickerGallery"),
+      stickerName: document.getElementById("stickerName"),
+      downloadBtn: document.getElementById("downloadBtn"),
+      downloadTopBtn: document.getElementById("downloadTopBtn"),
+      downloadMobileBtn: document.getElementById("downloadMobileBtn"),
+      retakeBtn: document.getElementById("retakeBtn"),
+      retakeTopBtn: document.getElementById("retakeTopBtn"),
+      retakeMobileBtn: document.getElementById("retakeMobileBtn"),
+      framesJumpBtn: document.getElementById("framesJumpBtn"),
+      cameraJumpBtn: document.getElementById("cameraJumpBtn"),
+      customizeJumpBtn: document.getElementById("customizeJumpBtn"),
+      stripJumpBtn: document.getElementById("stripJumpBtn"),
+      framesJumpHeaderBtn: document.getElementById("framesJumpHeaderBtn"),
+      cameraPanel: document.getElementById("cameraPanel"),
+      stripPanel: document.getElementById("stripPanel"),
+      framesPanel: document.getElementById("framesPanel"),
+      permissionModal: document.getElementById("permissionModal"),
+      tryAgainBtn: document.getElementById("tryAgainBtn"),
+      captureCanvas: document.getElementById("captureCanvas"),
+      downloadCanvas: document.getElementById("downloadCanvas")
+    };
+
+    function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+    function showScreen(name) {
+      els.welcomeScreen.classList.toggle("active", name === "welcome");
+      els.boothScreen.classList.toggle("active", name === "booth");
+    }
+
+    function startMusic() {
+      state.musicWanted = true;
+      els.bgMusic.volume = 0.88;
+      els.bgMusic.muted = state.muted;
+      const playPromise = els.bgMusic.play();
+      if (playPromise) {
+        playPromise.catch(() => {
+          els.statusText.textContent = "Tap the sound button once to start the music.";
+        });
+      }
+      updateAudioButton();
+    }
+
+    function updateAudioButton() {
+      els.audioToggle.textContent = state.muted ? "🔇" : "🔊";
+      els.audioToggle.setAttribute("aria-label", state.muted ? "Unmute music" : "Mute music");
+      els.bgMusic.volume = 0.88;
+      els.bgMusic.muted = state.muted;
+    }
+
+    function markFirstGesture() {
+      state.firstGestureSeen = true;
+      if (state.musicWanted) startMusic();
+    }
+
+    function playShutter() {
+      state.shutterCtx ||= new (window.AudioContext || window.webkitAudioContext)();
+      const now = state.shutterCtx.currentTime;
+      const osc = state.shutterCtx.createOscillator();
+      const gain = state.shutterCtx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(980, now);
+      osc.frequency.exponentialRampToValueAtTime(260, now + 0.12);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+      osc.connect(gain).connect(state.shutterCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.14);
+    }
+
+    async function enterBooth() {
+      state.entered = true;
+      markFirstGesture();
+      showScreen("booth");
+      startMusic();
+      await requestCamera();
+    }
+
+    async function requestCamera() {
+      try {
+        stopCamera();
+        els.statusText.textContent = "Opening camera...";
+        state.stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 960 }, facingMode: "user" },
+          audio: false
+        });
+        els.video.srcObject = state.stream;
+        await els.video.play();
+        els.permissionModal.classList.remove("open");
+        setCaptureEnabled(true);
+        els.statusText.textContent = "Ready for four cute snaps.";
+      } catch (error) {
+        setCaptureEnabled(false);
+        els.statusText.textContent = "Camera permission is needed.";
+        els.permissionModal.classList.add("open");
+      }
+    }
+
+    function stopCamera() {
+      if (!state.stream) return;
+      state.stream.getTracks().forEach(track => track.stop());
+      state.stream = null;
+      els.video.srcObject = null;
+    }
+
+    function setCaptureEnabled(enabled) {
+      els.takePhotoBtn.disabled = !enabled;
+      els.takePhotoMobileBtn.disabled = !enabled;
+    }
+
+    function renderChoiceGallery(container, items, selectedId, onSelect, labeler) {
+      container.innerHTML = "";
+      items.forEach(item => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice-chip";
+        button.setAttribute("aria-pressed", String(item.id === selectedId));
+        button.textContent = labeler(item);
+        button.addEventListener("click", () => onSelect(item.id));
+        container.appendChild(button);
+      });
+    }
+
+    function renderFrameGallery() {
+      els.frameGallery.innerHTML = "";
+      frames.forEach(frame => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "frame-card rounded-[1.7rem] bg-white/75 p-2 text-left shadow-lg";
+        button.setAttribute("aria-pressed", String(frame.id === state.selectedFrame.id));
+        button.innerHTML = `
+          <div class="photo-strip ${frame.className}" style="width:100%;padding:22px 13px 26px;border-radius:22px;">
+            ${frame.icons.map((icon, i) => `<span class="decor" style="${decorStyle(i, true)}">${icon}</span>`).join("")}
+            <div class="strip-photos" style="gap:6px;">
+              ${Array.from({ length: 4 }, () => `<div class="strip-photo" style="border-width:3px;border-radius:9px;box-shadow:none;"></div>`).join("")}
+            </div>
+          </div>
+          <span class="mt-2 block min-h-[38px] px-1 font-bubble text-sm font-bold leading-tight text-purple-800">${frame.name}</span>
+        `;
+        button.addEventListener("click", () => selectFrame(frame.id));
+        els.frameGallery.appendChild(button);
+      });
+    }
+
+    function decorStyle(index, small = false) {
+      const size = small ? "17px" : "34px";
+      const styles = [
+        `left:${small ? "8px" : "18px"};top:${small ? "8px" : "18px"};font-size:${size}`,
+        `right:${small ? "9px" : "22px"};top:${small ? "8px" : "18px"};font-size:${size}`,
+        `left:${small ? "9px" : "24px"};bottom:${small ? "10px" : "34px"};font-size:${size}`,
+        `right:${small ? "10px" : "28px"};bottom:${small ? "10px" : "24px"};font-size:${size}`
+      ];
+      return styles[index] || styles[0];
+    }
+
+    function selectFrame(id) {
+      state.selectedFrame = frames.find(frame => frame.id === id) || frames[0];
+      els.frameName.textContent = state.selectedFrame.name;
+      renderFrameGallery();
+      renderFinalStrip();
+    }
+
+    function selectFilter(id) {
+      state.selectedFilter = filters.find(filter => filter.id === id) || filters[0];
+      els.filterName.textContent = state.selectedFilter.name;
+      document.documentElement.style.setProperty("--active-filter", state.selectedFilter.css);
+      renderChoiceGallery(els.filterGallery, filters, state.selectedFilter.id, selectFilter, item => item.name);
+    }
+
+    function selectStickerPack(id) {
+      state.selectedStickerPack = stickerPacks.find(pack => pack.id === id) || stickerPacks[0];
+      els.stickerName.textContent = state.selectedStickerPack.name;
+      renderStickers();
+      renderChoiceGallery(els.stickerGallery, stickerPacks, state.selectedStickerPack.id, selectStickerPack, item => `${item.icons[0] || "♡"} ${item.name}`);
+    }
+
+    function renderStickers() {
+      els.previewStickerLayer.innerHTML = state.selectedStickerPack.icons.map((icon, index) => {
+        const pos = stickerPositions[index] || stickerPositions[0];
+        const style = Object.entries(pos).map(([key, value]) => `${key}:${value}`).join(";");
+        return `<span class="preview-sticker" style="${style}">${icon}</span>`;
+      }).join("");
+    }
+
+    function renderLiveStrip() {
+      els.liveStrip.innerHTML = "";
+      for (let i = 0; i < 4; i += 1) {
+        const slot = document.createElement("div");
+        slot.className = "mini-photo";
+        slot.innerHTML = state.photos[i] ? `<img src="${state.photos[i]}" alt="Captured photo ${i + 1}">` : `${i + 1}`;
+        els.liveStrip.appendChild(slot);
+      }
+    }
+
+    function renderFinalStrip() {
+      const frame = state.selectedFrame;
+      const photoMarkup = Array.from({ length: 4 }, (_, index) => {
+        const src = state.photos[index];
+        return `<div class="strip-photo">${src ? `<img src="${src}" alt="Photo ${index + 1}">` : ""}</div>`;
+      }).join("");
+      const decorMarkup = frame.icons.map((icon, index) => `<span class="decor" style="${decorStyle(index)}">${icon}</span>`).join("");
+      const titleMarkup = frame.id === "chuchay" ? `
+        <div class="absolute left-0 right-0 top-5 z-[5] text-center font-bubble text-4xl font-bold text-fuchsia-500 drop-shadow-sm" style="-webkit-text-stroke: 2px #c084fc;">So Cute!</div>
+      ` : "";
+      const bottomMarkup = frame.id === "chuchay" ? `
+        <div class="absolute bottom-3 left-1/2 z-[5] -translate-x-1/2 rounded-[1.5rem] border-4 border-purple-200 bg-white/88 px-5 py-2 text-center font-bubble text-2xl font-bold leading-none text-fuchsia-500 shadow-lg">Best Day<br>Ever</div>
+      ` : `<div class="label-tag">${frame.label}</div>`;
+      els.stripStage.innerHTML = `
+        <div id="finalStrip" class="photo-strip ${frame.className}">
+          ${titleMarkup}
+          ${decorMarkup}
+          <div class="strip-photos">${photoMarkup}</div>
+          ${bottomMarkup}
+        </div>
+      `;
+      const complete = state.photos.length === 4;
+      els.downloadBtn.disabled = !complete;
+      els.downloadMobileBtn.disabled = !complete;
+      els.downloadTopBtn.classList.toggle("hidden", !complete);
+    }
+
+    function drawStickerPack(ctx, width, height, scale = 1) {
+      ctx.save();
+      ctx.font = `${Math.round(48 * scale)}px Arial`;
+      ctx.textBaseline = "top";
+      state.selectedStickerPack.icons.forEach((icon, index) => {
+        const positions = [
+          [width * 0.05, height * 0.06],
+          [width * 0.82, height * 0.07],
+          [width * 0.06, height * 0.77],
+          [width * 0.82, height * 0.78]
+        ];
+        ctx.fillText(icon, positions[index][0], positions[index][1]);
+      });
+      ctx.restore();
+    }
+
+    function capturePhoto() {
+      const canvas = els.captureCanvas;
+      const video = els.video;
+      const width = video.videoWidth || 1280;
+      const height = video.videoHeight || 960;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.save();
+      ctx.filter = state.selectedFilter.css;
+      ctx.drawImage(video, 0, 0, width, height);
+      ctx.restore();
+      drawStickerPack(ctx, width, height, width / 1280);
+      return canvas.toDataURL("image/png");
+    }
+
+    async function runCountdown() {
+      for (const marker of ["3", "2", "1", "📸"]) {
+        els.countdown.textContent = marker;
+        els.countdown.classList.remove("show");
+        void els.countdown.offsetWidth;
+        els.countdown.classList.add("show");
+        await wait(marker === "📸" ? 380 : 820);
+      }
+      els.countdown.classList.remove("show");
+    }
+
+    async function takePhotoSequence() {
+      if (state.capturing || !state.stream) return;
+      state.capturing = true;
+      state.photos = [];
+      renderLiveStrip();
+      setCaptureEnabled(false);
+      els.statusText.textContent = "Get ready...";
+      for (let i = 0; i < 4; i += 1) {
+        els.statusText.textContent = `Shot ${i + 1} of 4`;
+        await runCountdown();
+        playShutter();
+        state.photos.push(capturePhoto());
+        renderLiveStrip();
+        renderFinalStrip();
+        if (i < 3) {
+          els.statusText.textContent = "Next pose in 2 seconds.";
+          await wait(2000);
+        }
+      }
+      els.statusText.textContent = "All done. Pick a frame or download your strip.";
+      setCaptureEnabled(true);
+      state.capturing = false;
+    }
+
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + width, y, x + width, y + height, radius);
+      ctx.arcTo(x + width, y + height, x, y + height, radius);
+      ctx.arcTo(x, y + height, x, y, radius);
+      ctx.arcTo(x, y, x + width, y, radius);
+      ctx.closePath();
+    }
+
+    function drawThemeBackground(ctx, frame, width, height) {
+      const grad = ctx.createLinearGradient(0, 0, 0, height);
+      const palettes = {
+        soda: ["#8b5cf6", "#c084fc", "#f0abfc"],
+        y2k: ["#a855f7", "#c084fc", "#f0abfc"],
+        milk: ["#faf5ff", "#e9d5ff", "#fff1f2"],
+        dream: ["#c4b5fd", "#fbcfe8", "#fef3c7"],
+        galaxy: ["#312e81", "#7e22ce", "#d8b4fe"],
+        kuromi: ["#581c87", "#a855f7", "#f5d0fe"],
+        chuchay: ["#fdf4ff", "#f3e8ff", "#fae8ff"]
+      };
+      const colors = palettes[frame.id] || ["#d8b4fe", "#e9d5ff", "#fff1f2"];
+      grad.addColorStop(0, colors[0]);
+      grad.addColorStop(0.55, colors[1]);
+      grad.addColorStop(1, colors[2]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      if (frame.id === "gingham") {
+        ctx.fillStyle = "rgba(168,85,247,0.16)";
+        for (let x = 0; x < width; x += 68) ctx.fillRect(x, 0, 34, height);
+        for (let y = 0; y < height; y += 68) ctx.fillRect(0, y, width, 34);
+      }
+
+      if (frame.id === "chuchay") {
+        ctx.fillStyle = "rgba(192,132,252,0.34)";
+        for (let x = 48; x < width; x += 170) {
+          for (let y = 66; y < height; y += 230) {
+            ctx.fillRect(x - 18, y - 3, 36, 6);
+            ctx.fillRect(x - 3, y - 18, 6, 36);
+          }
+        }
+      }
+
+      ctx.fillStyle = "rgba(255,255,255,0.42)";
+      for (let i = 0; i < 65; i += 1) {
+        const x = (i * 97) % width;
+        const y = (i * 149) % height;
+        const r = frame.id === "soda" || frame.id === "jelly" ? 12 + (i % 13) : 4 + (i % 7);
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    async function imageFromDataUrl(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    async function downloadStrip() {
+      if (state.photos.length !== 4) return;
+      const canvas = els.downloadCanvas;
+      const ctx = canvas.getContext("2d");
+      const scale = 3;
+      const width = 390 * scale;
+      const marginX = 34 * scale;
+      const top = (state.selectedFrame.id === "chuchay" ? 112 : 54) * scale;
+      const gap = 16 * scale;
+      const photoW = width - marginX * 2;
+      const photoH = Math.round(photoW * 0.75);
+      const border = 8 * scale;
+      const bottom = (state.selectedFrame.id === "chuchay" ? 136 : 68) * scale;
+      const height = top + photoH * 4 + gap * 3 + bottom;
+      canvas.width = width;
+      canvas.height = height;
+      drawThemeBackground(ctx, state.selectedFrame, width, height);
+
+      if (state.selectedFrame.id === "chuchay") {
+        ctx.save();
+        ctx.textAlign = "center";
+        ctx.font = `900 ${48 * scale}px Arial`;
+        ctx.lineWidth = 5 * scale;
+        ctx.strokeStyle = "#c084fc";
+        ctx.fillStyle = "#d9468f";
+        ctx.strokeText("So Cute!", width / 2, 72 * scale);
+        ctx.fillText("So Cute!", width / 2, 72 * scale);
+        ctx.restore();
+      }
+
+      const images = await Promise.all(state.photos.map(imageFromDataUrl));
+      images.forEach((img, index) => {
+        const x = marginX;
+        const y = top + index * (photoH + gap);
+        ctx.save();
+        drawRoundedRect(ctx, x, y, photoW, photoH, 18 * scale);
+        ctx.fillStyle = "rgba(255,255,255,0.88)";
+        ctx.fill();
+        ctx.clip();
+        ctx.translate(x + photoW, y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, 0, 0, photoW, photoH);
+        ctx.restore();
+        ctx.save();
+        ctx.lineWidth = border;
+        ctx.strokeStyle = "rgba(255,255,255,0.9)";
+        drawRoundedRect(ctx, x + border / 2, y + border / 2, photoW - border, photoH - border, 14 * scale);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      ctx.font = `${34 * scale}px Arial`;
+      state.selectedFrame.icons.forEach((icon, index) => {
+        const positions = [[18, 42], [width / scale - 72, 42], [24, height / scale - 52], [width / scale - 78, height / scale - 52]];
+        ctx.fillText(icon, positions[index][0] * scale, positions[index][1] * scale);
+      });
+
+      if (state.selectedFrame.id === "chuchay") {
+        ctx.save();
+        const badgeW = 190 * scale;
+        const badgeH = 72 * scale;
+        const badgeX = (width - badgeW) / 2;
+        const badgeY = height - 102 * scale;
+        ctx.fillStyle = "rgba(255,255,255,0.88)";
+        drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeH, 30 * scale);
+        ctx.fill();
+        ctx.lineWidth = 4 * scale;
+        ctx.strokeStyle = "#d8b4fe";
+        ctx.stroke();
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#d9468f";
+        ctx.font = `900 ${28 * scale}px Arial`;
+        ctx.fillText("Best Day", width / 2, badgeY + 30 * scale);
+        ctx.fillText("Ever", width / 2, badgeY + 59 * scale);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = "rgba(255,255,255,0.78)";
+        drawRoundedRect(ctx, width - 178 * scale, height - 52 * scale, 154 * scale, 34 * scale, 18 * scale);
+        ctx.fill();
+        ctx.fillStyle = "#7e22ce";
+        ctx.font = `700 ${14 * scale}px Arial`;
+        ctx.fillText(state.selectedFrame.label, width - 158 * scale, height - 30 * scale);
+      }
+
+      const link = document.createElement("a");
+      link.download = `chuchay-photobooth-${state.selectedFrame.id}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    function retake() {
+      state.photos = [];
+      renderLiveStrip();
+      renderFinalStrip();
+      els.statusText.textContent = state.stream ? "Ready for four cute snaps." : "Allow camera access to begin.";
+    }
+
+    els.enterBtn.addEventListener("click", enterBooth);
+    els.previewFramesBtn.addEventListener("click", async () => {
+      state.entered = true;
+      markFirstGesture();
+      showScreen("booth");
+      setTimeout(() => els.frameGallery.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+      startMusic();
+      await requestCamera();
+    });
+    els.audioToggle.addEventListener("click", () => {
+      markFirstGesture();
+      state.muted = !state.muted;
+      updateAudioButton();
+      if (state.entered) startMusic();
+    });
+    els.takePhotoBtn.addEventListener("click", takePhotoSequence);
+    els.takePhotoMobileBtn.addEventListener("click", takePhotoSequence);
+    els.downloadBtn.addEventListener("click", downloadStrip);
+    els.downloadTopBtn.addEventListener("click", downloadStrip);
+    els.downloadMobileBtn.addEventListener("click", downloadStrip);
+    els.retakeBtn.addEventListener("click", retake);
+    els.retakeMobileBtn.addEventListener("click", retake);
+    els.retakeTopBtn.addEventListener("click", () => { retake(); requestCamera(); });
+    els.framesJumpBtn.addEventListener("click", () => els.framesPanel.scrollIntoView({ behavior: "smooth", block: "center" }));
+    els.cameraJumpBtn.addEventListener("click", () => els.cameraPanel.scrollIntoView({ behavior: "smooth", block: "start" }));
+    els.customizeJumpBtn.addEventListener("click", () => els.filterGallery.scrollIntoView({ behavior: "smooth", block: "center" }));
+    els.stripJumpBtn.addEventListener("click", () => els.stripPanel.scrollIntoView({ behavior: "smooth", block: "start" }));
+    els.framesJumpHeaderBtn.addEventListener("click", () => els.framesPanel.scrollIntoView({ behavior: "smooth", block: "center" }));
+    els.tryAgainBtn.addEventListener("click", requestCamera);
+    window.addEventListener("pointerdown", markFirstGesture, { once: true, passive: true });
+    window.addEventListener("beforeunload", stopCamera);
+
+    renderFrameGallery();
+    renderChoiceGallery(els.filterGallery, filters, state.selectedFilter.id, selectFilter, item => item.name);
+    renderChoiceGallery(els.stickerGallery, stickerPacks, state.selectedStickerPack.id, selectStickerPack, item => `${item.icons[0] || "♡"} ${item.name}`);
+    renderStickers();
+    renderLiveStrip();
+    renderFinalStrip();
+    selectFilter(state.selectedFilter.id);
+    updateAudioButton();
+  </script>
+</body>
+</html>
